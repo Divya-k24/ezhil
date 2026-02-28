@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { collection, query, orderBy, onSnapshot, limit } from "firebase/firestore";
 import { db } from "../firebase";
+import { useNavigate } from "react-router-dom";
 import { 
   BarChart3, 
   ShieldAlert, 
@@ -10,10 +11,14 @@ import {
   CheckCircle2, 
   AlertCircle,
   TrendingUp,
-  Filter
+  Filter,
+  Trash2,
+  Trophy,
+  Map
 } from "lucide-react";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [areaScores, setAreaScores] = useState([]);
@@ -98,8 +103,16 @@ const Dashboard = () => {
           </h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Real-time cleanliness monitoring</p>
         </div>
-        <div style={{ background: 'white', padding: '8px', borderRadius: '12px', boxShadow: 'var(--shadow)' }}>
-          <Filter size={20} color="var(--text-muted)" />
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <div 
+            onClick={() => navigate('/leaderboard')}
+            style={{ background: 'white', padding: '10px', borderRadius: '12px', boxShadow: 'var(--shadow)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <Trophy size={20} color="var(--madurai-orange)" />
+          </div>
+          <div style={{ background: 'white', padding: '10px', borderRadius: '12px', boxShadow: 'var(--shadow)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Filter size={20} color="var(--text-muted)" />
+          </div>
         </div>
       </header>
 
@@ -140,6 +153,59 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* City Heatmap Section */}
+      <div style={{ marginBottom: '40px' }}>
+        <h2 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Map size={22} color="var(--primary)" /> Madurai Heatmap
+        </h2>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(3, 1fr)', 
+          gap: '12px',
+          background: 'white',
+          padding: '16px',
+          borderRadius: '24px',
+          border: '1px solid rgba(0,0,0,0.03)',
+          boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.02)'
+        }}>
+          {areaScores.length > 0 ? areaScores.map((area) => (
+            <motion.div 
+              key={area.name}
+              whileTap={{ scale: 0.95 }}
+              style={{
+                height: '74px',
+                borderRadius: '16px',
+                background: area.score > 85 ? '#DCFCE7' : (area.score > 60 ? '#FEF3C7' : '#FEE2E2'),
+                border: `1px solid ${area.score > 85 ? '#86EFAC' : (area.score > 60 ? '#FDE68A' : '#FCA5A5')}`,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '8px',
+                textAlign: 'center',
+                cursor: 'pointer'
+              }}
+            >
+              <span style={{ fontSize: '0.6rem', fontWeight: '800', color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', width: '100%', textOverflow: 'ellipsis' }}>{area.name}</span>
+              <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: area.score > 85 ? '#166534' : (area.score > 60 ? '#92400E' : '#991B1B') }}>{area.score}</span>
+            </motion.div>
+          )) : (
+            <p style={{ gridColumn: 'span 3', textAlign: 'center', padding: '20px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>Gathering city pulse data...</p>
+          )}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginTop: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.65rem', color: 'var(--text-muted)' }}>
+                <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: '#DCFCE7' }}></div> Clean
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.65rem', color: 'var(--text-muted)' }}>
+                <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: '#FEF3C7' }}></div> Warning
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.65rem', color: 'var(--text-muted)' }}>
+                <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: '#FEE2E2' }}></div> Critical
+            </div>
+        </div>
+      </div>
+
       {/* Priority Areas Section */}
       <section style={{ marginBottom: '32px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -160,7 +226,7 @@ const Dashboard = () => {
           scrollSnapType: 'x mandatory',
           scrollbarWidth: 'none'
         }}>
-          {areaScores.map((area, idx) => (
+          {areaScores.map((area) => (
             <motion.div 
               whileTap={{ scale: 0.95 }}
               key={area.name} 

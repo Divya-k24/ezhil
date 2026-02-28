@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import Assistant from "./pages/Assistant";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
+import Leaderboard from "./pages/Leaderboard";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="assistant" element={<Assistant />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="leaderboard" element={<Leaderboard />} />
         </Route>
         <Route path="/auth" element={<Auth />} />
       </Routes>

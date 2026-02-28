@@ -15,7 +15,11 @@ import {
   History,
   ShieldCheck,
   Building2,
-  Map
+  Map,
+  Zap,
+  Sparkles,
+  Target,
+  Gem
 } from "lucide-react";
 import { signOut } from "firebase/auth";
 
@@ -190,6 +194,68 @@ const Profile = () => {
             LEVEL {Math.floor(myReports.length / 5) + 1}
           </div>
         </div>
+      </div>
+      
+      {/* Achievements & Badges */}
+      <h3 style={{ fontSize: '1.1rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <Target size={20} color="var(--primary)" /> Achievements
+      </h3>
+      <div style={{ 
+        display: 'flex', 
+        gap: '12px', 
+        overflowX: 'auto', 
+        paddingBottom: '12px', 
+        marginBottom: '24px',
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none'
+      }}>
+        {[
+          { id: 'starter', name: 'Starter', icon: <Zap size={22} />, desc: '1st Report', unlocked: myReports.length >= 1 },
+          { id: 'explorer', name: 'Explorer', icon: <Sparkles size={22} />, desc: '5 Reports', unlocked: myReports.length >= 5 },
+          { id: 'resolved', name: 'Hero', icon: <ShieldCheck size={22} />, desc: 'Resolved', unlocked: myReports.some(r => r.status === 'resolved') },
+          { id: 'top', name: 'Elite', icon: <Gem size={22} />, desc: '100+ Points', unlocked: (myReports.length * 10) >= 100 },
+          { id: 'guardian', name: 'Guardian', icon: <Award size={22} />, desc: 'Level 5+', unlocked: (Math.floor(myReports.length / 5) + 1) >= 5 },
+        ].map(badge => (
+          <motion.div 
+            key={badge.id}
+            whileHover={{ scale: badge.unlocked ? 1.05 : 1 }}
+            style={{ 
+              minWidth: '94px', 
+              background: badge.unlocked ? 'white' : 'rgba(0,0,0,0.03)',
+              border: badge.unlocked ? '1px solid var(--accent)' : '1px dashed #ddd',
+              padding: '16px 8px',
+              borderRadius: '20px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              textAlign: 'center',
+              opacity: badge.unlocked ? 1 : 0.5,
+              position: 'relative'
+            }}
+          >
+            <div style={{ 
+              width: '44px', 
+              height: '44px', 
+              borderRadius: '14px', 
+              background: badge.unlocked ? 'var(--primary-ultra-light)' : '#f3f4f6', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              color: badge.unlocked ? 'var(--primary)' : '#999',
+              marginBottom: '8px'
+            }}>
+              {badge.icon}
+            </div>
+            <p style={{ fontSize: '0.75rem', fontWeight: 'bold', margin: 0, color: badge.unlocked ? 'var(--text-main)' : '#999' }}>{badge.name}</p>
+            <p style={{ fontSize: '0.55rem', color: 'var(--text-muted)', margin: 0 }}>{badge.desc}</p>
+            
+            {badge.unlocked && (
+              <div style={{ position: 'absolute', top: -4, right: -4, background: 'var(--primary)', color: 'white', borderRadius: '50%', width: '16px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>
+                ✓
+              </div>
+            )}
+          </motion.div>
+        ))}
       </div>
 
       {/* Action Links */}
